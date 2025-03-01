@@ -2,141 +2,141 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { UNSPLASH_ACCESS_KEY } from '@env';
 
-const CACHE_EXPIRY = 7 * 24 * 60 * 60 * 1000; // 1 week in milliseconds
-const RATE_LIMIT_WINDOW = 60 * 60 * 1000; // 1 hour in milliseconds
-const MAX_REQUESTS_PER_HOUR = 50; // Unsplash demo app limit
-
-const imageCache = {};
-let requestCount = 0;
-let lastRequestTime = 0;
-
-const DEFAULT_FALLBACK = 'https://images.unsplash.com/photo-1584646098378-0874589d76b1?auto=format&fit=crop&w=800';
-
-// Fallback images for when we hit rate limits - all verified working
-const fallbackImages = {
-  'pesach': DEFAULT_FALLBACK,
-  'yom_haatzmaut': 'https://images.unsplash.com/photo-1556804335-2fa563e93aae?auto=format&fit=crop&w=800',
-  'lag_baomer': 'https://images.unsplash.com/photo-1517142089942-ba376ce32a2e?auto=format&fit=crop&w=800',
-  'shavuot': 'https://images.unsplash.com/photo-1589156569069-7f3a2513f5b5?auto=format&fit=crop&w=800',
-  'summer_vacation': 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800',
-  'rosh_hashana': 'https://images.unsplash.com/photo-1567861911437-538298e4232c?auto=format&fit=crop&w=800',
-  'yom_kippur': 'https://images.unsplash.com/photo-1504256624605-c31cde11be74?auto=format&fit=crop&w=800',
-  'sukkot': 'https://images.unsplash.com/photo-1601159093357-13f3e2c21faf?auto=format&fit=crop&w=800',
-  'chanukah': 'https://images.unsplash.com/photo-1607317146126-72a411daa11c?auto=format&fit=crop&w=800',
-  'tu_bishvat': 'https://images.unsplash.com/photo-1518114581056-e54e9f3108f6?auto=format&fit=crop&w=800',
-  'purim': 'https://images.unsplash.com/photo-1551103782-8ab07afd45c1?auto=format&fit=crop&w=800'
-};
-
-// Create axios instance with default config
 const unsplashApi = axios.create({
   baseURL: 'https://api.unsplash.com',
   headers: {
-    'Authorization': `Client-ID ${UNSPLASH_ACCESS_KEY}`,
-    'Accept-Version': 'v1'
-  }
+    Authorization: `Client-ID ${UNSPLASH_ACCESS_KEY}`,
+  },
 });
 
-const checkRateLimit = () => {
-  const now = Date.now();
-  if (now - lastRequestTime >= RATE_LIMIT_WINDOW) {
-    // Reset counter if window has passed
-    requestCount = 0;
-    lastRequestTime = now;
-    return true;
-  }
-  return requestCount < MAX_REQUESTS_PER_HOUR;
-};
+// Cache duration set to 1 week
+const CACHE_EXPIRY = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
+const RATE_LIMIT_WINDOW = 60 * 60 * 1000; // 1 hour in milliseconds
+const MAX_REQUESTS_PER_HOUR = 50;
 
-const getFallbackImage = (holidayId) => {
-  return fallbackImages[holidayId] || DEFAULT_FALLBACK;
-};
-
-export const getHolidayImage = async (searchTerm, holidayId) => {
-  try {
-    // Check memory cache first
-    if (imageCache[holidayId]) {
-      const { url, timestamp } = imageCache[holidayId];
-      if (Date.now() - timestamp < CACHE_EXPIRY) {
-        return url;
-      }
-    }
-
-    // Check AsyncStorage cache
-    const cacheKey = `holiday_image_${holidayId}`;
-    const cached = await AsyncStorage.getItem(cacheKey);
-    if (cached) {
-      const { url, timestamp } = JSON.parse(cached);
-      if (Date.now() - timestamp < CACHE_EXPIRY) {
-        // Update memory cache
-        imageCache[holidayId] = { url, timestamp };
-        return url;
-      }
-    }
-
-    // Check rate limit before making request
-    if (!checkRateLimit()) {
-      console.log('Rate limit reached, using fallback image');
-      return getFallbackImage(holidayId);
-    }
-
-    // Fetch new image
-    requestCount++;
-    lastRequestTime = Date.now();
-    
-    const response = await unsplashApi.get('/photos/random', {
-      params: {
-        query: searchTerm,
-        orientation: 'portrait',
-        count: 1
-      }
-    });
-
-    if (response.data) {
-      const imageData = {
-        url: response.data.urls.regular,
-        timestamp: Date.now()
-      };
-
-      // Update both caches
-      imageCache[holidayId] = imageData;
-      await AsyncStorage.setItem(cacheKey, JSON.stringify(imageData));
-
-      return imageData.url;
-    }
-
-    return getFallbackImage(holidayId);
-  } catch (error) {
-    console.error('Error fetching holiday image:', error.response?.data || error.message);
-    return getFallbackImage(holidayId);
-  }
-};
+// Track API requests
+let requestCount = 0;
+let lastRequestTime = 0;
 
 export const clearImageCache = async () => {
   try {
     const keys = await AsyncStorage.getAllKeys();
-    const imageCacheKeys = keys.filter(key => key.startsWith('holiday_image_'));
-    await AsyncStorage.multiRemove(imageCacheKeys);
-    Object.keys(imageCache).forEach(key => delete imageCache[key]);
+    const cacheKeys = keys.filter(key => key.startsWith('unsplash_'));
+    await AsyncStorage.multiRemove(cacheKeys);
     console.log('Image cache cleared');
   } catch (error) {
-    console.error('Error clearing image cache:', error);
+    console.error('Failed to clear image cache:', error);
+  }
+};
+
+const getCachedImage = async (searchTerm) => {
+  try {
+    const cacheKey = `unsplash_${searchTerm}`;
+    const cached = await AsyncStorage.getItem(cacheKey);
+    
+    if (cached) {
+      const { url, timestamp } = JSON.parse(cached);
+      const age = Date.now() - timestamp;
+      
+      // Only return cached image if it's less than a week old
+      if (age < CACHE_EXPIRY) {
+        console.log(`Using cached image for ${searchTerm}, age: ${Math.round(age / (1000 * 60 * 60 * 24))} days`);
+        return url;
+      } else {
+        console.log(`Cache expired for ${searchTerm}, fetching new image`);
+      }
+    }
+    return null;
+  } catch (error) {
+    console.error('Error reading from cache:', error);
+    return null;
+  }
+};
+
+const cacheImage = async (searchTerm, url) => {
+  try {
+    const cacheKey = `unsplash_${searchTerm}`;
+    const cacheData = {
+      url,
+      timestamp: Date.now(),
+    };
+    await AsyncStorage.setItem(cacheKey, JSON.stringify(cacheData));
+    console.log(`Cached new image for ${searchTerm}`);
+  } catch (error) {
+    console.error('Error caching image:', error);
+  }
+};
+
+const getDefaultImageForHoliday = (holidayId) => {
+  const defaultImages = {
+    pesach: 'https://images.unsplash.com/photo-1584646098378-0874589d76b1',
+    purim: 'https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d',
+    chanukah: 'https://images.unsplash.com/photo-1607317146126-54c16c1757c7',
+    roshhashana: 'https://images.unsplash.com/photo-1506368249639-73a05d6f6488',
+    yomkippur: 'https://images.unsplash.com/photo-1505228395891-9a51e7e86bf6',
+    sukkot: 'https://images.unsplash.com/photo-1601375863404-5b912f4536df',
+    shavuot: 'https://images.unsplash.com/photo-1589367920969-ab8e050bbb04',
+    lagbaomer: 'https://images.unsplash.com/photo-1578950435899-d1c1bf063534',
+    tubishvat: 'https://images.unsplash.com/photo-1518531933037-91b2f5f229cc',
+    summer_vacation: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e',
+    yomhaatzmaut: 'https://images.unsplash.com/photo-1542820229-081e0c12af0b'
+  };
+  return defaultImages[holidayId];
+};
+
+export const getHolidayImage = async (searchTerm, holidayId) => {
+  try {
+    // First check if we have a valid cached image
+    const cachedUrl = await getCachedImage(searchTerm);
+    if (cachedUrl) {
+      return cachedUrl;
+    }
+
+    // Check rate limiting
+    const now = Date.now();
+    if (now - lastRequestTime > RATE_LIMIT_WINDOW) {
+      requestCount = 0;
+      lastRequestTime = now;
+    }
+
+    if (requestCount >= MAX_REQUESTS_PER_HOUR) {
+      console.log('Rate limit reached, using default image');
+      return getDefaultImageForHoliday(holidayId);
+    }
+
+    // Fetch new image from Unsplash
+    const response = await unsplashApi.get('/photos/random', {
+      params: {
+        query: searchTerm,
+        orientation: 'landscape',
+      }
+    });
+
+    requestCount++;
+    lastRequestTime = now;
+
+    if (response.data && response.data.urls) {
+      const imageUrl = response.data.urls.regular;
+      await cacheImage(searchTerm, imageUrl);
+      return imageUrl;
+    }
+
+    return getDefaultImageForHoliday(holidayId);
+  } catch (error) {
+    console.error('Error fetching holiday image:', error);
+    return getDefaultImageForHoliday(holidayId);
   }
 };
 
 export const preloadHolidayImages = async (holidays) => {
   try {
-    // Load images sequentially to avoid rate limiting
-    const results = [];
     for (const holiday of holidays) {
-      const imageUrl = await getHolidayImage(holiday.searchTerm, holiday.id);
-      results.push(imageUrl);
-      // Add a small delay between requests
-      await new Promise(resolve => setTimeout(resolve, 100));
+      const cachedUrl = await getCachedImage(holiday.searchTerm);
+      if (!cachedUrl) {
+        await getHolidayImage(holiday.searchTerm, holiday.id);
+      }
     }
-    console.log('Holiday images preloaded');
-    return results;
   } catch (error) {
-    console.error('Error preloading holiday images:', error);
-    return [];
+    console.error('Error preloading images:', error);
   }
 };

@@ -6,6 +6,7 @@ import { clearImageCache } from './utils/unsplash';
 import { lightTheme, darkTheme } from './theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
+import { formatHebrewDate, formatRelativeTime } from './utils/hebrewDate';
 
 const fallbackImage = 'https://images.unsplash.com/photo-1584646098378-0874589d76b1?auto=format&fit=crop&w=800';
 
@@ -62,7 +63,7 @@ export default function Home() {
         <View style={styles.textContainer}>
           <Text style={[styles.title, { color: theme.text }]}>{holiday.name}</Text>
           <Text style={[styles.date, { color: theme.secondaryText }]}>
-            {holiday.date.format('MMMM D, YYYY')} · {holiday.daysLeft} ימים שנשארו 
+            {formatHebrewDate(holiday.date)} · {formatRelativeTime(holiday.daysLeft)} ימים שנשארו 
           </Text>
         </View>
         <View style={styles.imageContainer}>
@@ -86,6 +87,7 @@ export default function Home() {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
+      <View style={styles.containerContent}> 
       <View style={styles.header}>
         <Text style={[styles.headerTitle, { color: theme.headerText }]}>מתי החופש</Text>
       </View>
@@ -99,15 +101,15 @@ export default function Home() {
       </ScrollView>
 
       <View style={[styles.navigation, { backgroundColor: theme.navigationBackground }]}>
+       
+      <TouchableOpacity style={styles.navButton}>
+          <Ionicons name="calendar" size={24} color={theme.navigationIcon} />
+        </TouchableOpacity>
+
         <TouchableOpacity style={styles.navButton}>
           <Ionicons name="home" size={24} color={theme.navigationIcon} />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.navButton}>
-          <Ionicons name="search" size={24} color={theme.navigationIcon} />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navButton}>
-          <Ionicons name="calendar" size={24} color={theme.navigationIcon} />
-        </TouchableOpacity>
+      
         <TouchableOpacity style={styles.navButton} onPress={toggleTheme}>
           <Ionicons 
             name={isDarkMode ? "sunny" : "moon"} 
@@ -115,6 +117,7 @@ export default function Home() {
             color={theme.navigationIcon}
           />
         </TouchableOpacity>
+      </View>
       </View>
     </SafeAreaView>
   );
@@ -124,11 +127,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  containerContent:{
+    width: '100%',
+    paddingHorizontal: 22,
+    height: '100%',
+  },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 20,
     paddingVertical: 15,
   },
   headerTitle: {
@@ -137,34 +144,22 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign:'right'
   },
-  searchButton: {
-    padding: 8,
-  },
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
+    paddingBottom: 20,
     textAlign: 'right',
   },
   content: {
     flex: 1,
   },
   card: {
-    marginHorizontal: 20,
-    marginVertical: 10,
-    borderRadius: 15,
-    overflow: 'hidden',
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    marginVertical: 8,
   },
   cardContent: {
-    padding: 15,
     flexDirection: 'row',
     alignItems: 'center',
+    paddingBottom: 10,
   },
   textContainer: {
     flex: 1,
@@ -181,8 +176,8 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
   imageContainer: {
-    width: 80,
-    height: 80,
+    width: 100,
+    height: 56,
     borderRadius: 10,
     overflow: 'hidden',
   },

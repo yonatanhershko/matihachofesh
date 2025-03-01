@@ -1,31 +1,21 @@
-import { createTheme } from '@shopify/restyle';
 
-const palette = {
-  white: '#FFFFFF',
-  black: '#000000',
-  gray: '#808080',
-  lightGray: '#D3D3D3',
-  darkGray: '#333333',
-  gold: '#BFA181',
-};
 
 export const lightTheme = {
-  background: '#FCFAF7',
-  card: '#FCFAF7',
+  background: '#FFFCF7',
+  card: '#FFFCF7',
   text: '#000000',
-  secondaryText: '#96784F',
+  secondaryText: '#6C4C1F',
   headerText: '#000000',
-  title: 'מתי החופש',
-  navigationBackground: '#FCFAF7',
+  navigationBackground: '#FFFCF7',
   navigationIcon: '#000000',
 };
 
 export const darkTheme = {
   background: '#211C12',
   card: '#211C12',
-  text: '#ffffff',
+  text: '#FEFEFA',
   secondaryText: '#C7B294',
-  headerText: '#ffffff',
+  headerText: '#FEFEFA',
   navigationBackground: '#211C12',
-  navigationIcon: '#ffffff',
+  navigationIcon: '#FEFEFA',
 };
