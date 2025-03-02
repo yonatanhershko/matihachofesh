@@ -128,6 +128,42 @@ export const getHolidayImage = async (searchTerm, holidayId) => {
   }
 };
 
+export const getHeaderImage = async () => {
+  const cacheKey = 'header_image';
+  const cachedUrl = await AsyncStorage.getItem(cacheKey);
+  
+  if (cachedUrl) {
+    return cachedUrl;
+  }
+
+  try {
+    // Search for Jewish-themed scroll or parchment images
+    const queries = [
+      'torah scroll parchment',
+      'jewish manuscript',
+      'hebrew scroll',
+      'ancient jewish text',
+      'sefer torah'
+    ];
+    const randomQuery = queries[Math.floor(Math.random() * queries.length)];
+    
+    const response = await unsplashApi.get('/photos/random', {
+      params: {
+        query: randomQuery,
+        orientation: 'landscape',
+        content_filter: 'high'
+      }
+    });
+
+    const imageUrl = response.data.urls.regular;
+    await AsyncStorage.setItem(cacheKey, imageUrl);
+    return imageUrl;
+  } catch (error) {
+    console.error('Error fetching header image:', error);
+    return 'https://images.unsplash.com/photo-1505243542579-da5adfe8338f?w=800&q=80'; // Fallback Torah scroll image
+  }
+};
+
 export const preloadHolidayImages = async (holidays) => {
   try {
     for (const holiday of holidays) {

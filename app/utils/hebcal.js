@@ -100,3 +100,82 @@ export const fetchHolidays = async () => {
     throw error;
   }
 };
+
+export const fetchParasha = async () => {
+  try {
+    // Get current date in YYYY-MM-DD format
+    const now = moment().tz("Asia/Jerusalem");
+    const date = now.format("YYYY-MM-DD");
+
+    // First get the parasha name from Hebcal API
+    const hebcalResponse = await axios.get('https://www.hebcal.com/shabbat', {
+      params: {
+        cfg: 'json',
+        geonameid: 293397,
+        date: date,
+        lg: 'h'
+      }
+    });
+
+    const parashaItem = hebcalResponse.data.items.find(item => item.category === 'parashat');
+    if (!parashaItem) {
+      console.log("No parasha found in Hebcal");
+      return null;
+    }
+
+    // Get the parasha name from Hebcal
+    const parashaName = parashaItem.hebrew.replace("פרשת", "").trim();
+    const fullTitle = parashaItem.hebrew;
+
+    // Now get the text from Sefaria's calendar API
+    const calendarResponse = await axios.get(
+      `https://www.sefaria.org/api/calendars?timezone=Asia/Jerusalem&date=${date}`
+    );
+    
+    // Find the parashat hashavua event to get the reference
+    const parashaEvent = calendarResponse.data.calendar_items.find(
+      (item) => item.title && item.title.he && item.ref && (
+        item.category === "parashat" || 
+        item.title.he.includes("פרשת")
+      )
+    );
+
+    if (!parashaEvent) {
+      console.log("No parasha found in Sefaria calendar");
+      return {
+        name: parashaName,
+        fullTitle: fullTitle,
+        date: now.format("YYYY-MM-DD"),
+        description: parashaItem.memo || ""  // Fallback to Hebcal memo
+      };
+    }
+
+    // Get the parasha text from Sefaria
+    const parashaRef = parashaEvent.ref;
+    console.log("📖 Parasha ref:", parashaRef);
+    
+    const textResponse = await axios.get(
+      `https://www.sefaria.org/api/texts/${parashaRef}?language=he`
+    );
+
+    // Get first three verses
+    const verses = Array.isArray(textResponse.data.he) 
+      ? textResponse.data.he.slice(0, 3).join(" ") 
+      : textResponse.data.he;
+
+    const result = {
+      name: parashaName,
+      fullTitle: fullTitle,  // Using Hebcal's title
+      date: now.format("YYYY-MM-DD"),
+      description: verses || parashaItem.memo || ""  // Fallback to Hebcal memo if no verses
+    };
+
+    console.log("📝 Returning parasha data:", result);
+    return result;
+
+  } catch (error) {
+    console.error("❌ Error fetching parasha:", error);
+    console.error("🔍 Error details:", error.response?.data || error.message);
+    return null;
+  }
+};

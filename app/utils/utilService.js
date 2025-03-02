@@ -52,3 +52,13 @@ export function timeSince(date) {
     if (interval > 1) return Math.floor(interval) + ' דקות';
     return Math.floor(seconds) + ' שניות';
 }
+
+const utilService = {
+  makeId,
+  generateHolidayId,
+  debounce,
+  formatNumber,
+  timeSince
+};
+
+export default utilService;
