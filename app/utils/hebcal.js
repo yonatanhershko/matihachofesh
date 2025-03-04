@@ -41,7 +41,6 @@ export const fetchHolidays = async () => {
       timezone: 'Asia/Jerusalem',
     };
 
-    console.log('Fetching holidays for year:', currentYear);
     const response = await hebcalApi.get('', { params });
     
     let holidays = response.data.items
@@ -65,7 +64,6 @@ export const fetchHolidays = async () => {
 
     // If we're close to the end of the year, fetch next year's holidays too
     if (now.month() >= 9) { // If we're in October or later
-      console.log('Fetching next year holidays');
       params.year = `${currentYear + 1}`;
       const nextYearResponse = await hebcalApi.get('', { params });
       const nextYearHolidays = nextYearResponse.data.items
@@ -87,12 +85,6 @@ export const fetchHolidays = async () => {
       .filter(holiday => holiday.date.isAfter(now))
       .sort((a, b) => a.date.valueOf() - b.date.valueOf());
 
-    console.log('Fetched holidays:', holidays.map(h => ({ 
-      name: h.englishName, 
-      date: h.date.format('YYYY-MM-DD'),
-      id: h.id,
-      daysUntil: h.date.diff(now, 'days')
-    })));
 
     return holidays;
   } catch (error) {
@@ -152,7 +144,6 @@ export const fetchParasha = async () => {
 
     // Get the parasha text from Sefaria
     const parashaRef = parashaEvent.ref;
-    console.log("📖 Parasha ref:", parashaRef);
     
     const textResponse = await axios.get(
       `https://www.sefaria.org/api/texts/${parashaRef}?language=he`
@@ -170,7 +161,6 @@ export const fetchParasha = async () => {
       description: verses || parashaItem.memo || ""  // Fallback to Hebcal memo if no verses
     };
 
-    console.log("📝 Returning parasha data:", result);
     return result;
 
   } catch (error) {

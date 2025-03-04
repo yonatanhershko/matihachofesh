@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { View, Image, ScrollView, StyleSheet, Text, TouchableOpacity, useColorScheme, ImageBackground, Alert } from 'react-native';
+import { View, Image, ScrollView, StyleSheet, Text, TouchableOpacity, ImageBackground } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { getHolidays } from './data/holidays';
 import { clearImageCache } from './utils/unsplash';
 import { lightTheme, darkTheme } from './theme';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
-import { formatHebrewDate, formatRelativeTime } from './utils/hebrewDate';
+import { formatHebrewDate, formatRelativeTime, useHebrewGregorianMonths } from './utils/hebrewDate';
 import { getHeaderImage } from './utils/unsplash';
 import { fetchParasha } from './utils/hebcal';
+import { useThemePreference } from './services/userPreferencesService';
 
 const fallbackImage = 'https://images.unsplash.com/photo-1584646098378-0874589d76b1?auto=format&fit=crop&w=800';
 
@@ -17,11 +17,10 @@ export default function Home() {
   const [headerImage, setHeaderImage] = useState(null);
   const [parasha, setParasha] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  const systemColorScheme = useColorScheme();
+  const { isDarkMode, setThemePreference } = useThemePreference();
+  const { months: hebrewGregorianMonths, loading: monthsLoading } = useHebrewGregorianMonths();
 
   useEffect(() => {
-    loadTheme();
     loadHolidays();
     loadHeaderImage();
   }, []);
@@ -30,7 +29,6 @@ export default function Home() {
     const loadParasha = async () => {
       try {
         const parashaData = await fetchParasha();
-        console.log('📖 Fetched parasha data:', parashaData);
         setParasha(parashaData);
       } catch (error) {
         console.error('❌ Error loading parasha:', error);
@@ -39,26 +37,11 @@ export default function Home() {
     loadParasha();
   }, []);
 
-  const loadTheme = async () => {
-    try {
-      const savedTheme = await AsyncStorage.getItem('theme');
-      if (savedTheme !== null) {
-        setIsDarkMode(savedTheme === 'dark');
-      } else {
-        setIsDarkMode(systemColorScheme === 'dark');
-      }
-    } catch (error) {
-      console.error('Error loading theme:', error);
-    }
-  };
-
   const toggleTheme = async () => {
     try {
-      const newTheme = !isDarkMode;
-      setIsDarkMode(newTheme);
-      await AsyncStorage.setItem('theme', newTheme ? 'dark' : 'light');
+      setThemePreference(!isDarkMode);
     } catch (error) {
-      console.error('Error saving theme:', error);
+      console.error('Error toggling theme:', error);
     }
   };
 
@@ -86,7 +69,7 @@ export default function Home() {
         <View style={styles.textContainer}>
           <Text style={[styles.title, { color: theme.text }]}>{holiday.name}</Text>
           <Text style={[styles.date, { color: theme.secondaryText }]}>
-            {formatHebrewDate(holiday.date)} · {formatRelativeTime(holiday.daysLeft)} ימים שנשארו 
+            {formatHebrewDate(holiday.date, hebrewGregorianMonths)} · {formatRelativeTime(holiday.daysLeft)} ימים שנשארו 
           </Text>
         </View>
         <View style={styles.imageContainer}>
@@ -100,7 +83,7 @@ export default function Home() {
     </View>
   );
 
-  if (loading) {
+  if (loading || monthsLoading) {
     return (
       <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
         <Text style={{ color: theme.text }}>Loading...</Text>

@@ -1,6 +1,7 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { UNSPLASH_ACCESS_KEY } from '@env';
+import moment from 'moment-timezone';
 
 const unsplashApi = axios.create({
   baseURL: 'https://api.unsplash.com',
@@ -18,6 +19,24 @@ const MAX_REQUESTS_PER_HOUR = 50;
 let requestCount = 0;
 let lastRequestTime = 0;
 
+
+// Get current week number (1-52) for the year
+const getCurrentWeekNumber = () => {
+  return moment().tz('Asia/Jerusalem').week();
+};
+
+// Get current year
+const getCurrentYear = () => {
+  return moment().tz('Asia/Jerusalem').year();
+};
+
+// Generate a consistent cache key based on week number and search term
+const generateCacheKey = (searchTerm) => {
+  const week = getCurrentWeekNumber();
+  const year = getCurrentYear();
+  return `unsplash_${searchTerm}_${year}_${week}`;
+};
+
 export const clearImageCache = async () => {
   try {
     const keys = await AsyncStorage.getAllKeys();
@@ -31,20 +50,12 @@ export const clearImageCache = async () => {
 
 const getCachedImage = async (searchTerm) => {
   try {
-    const cacheKey = `unsplash_${searchTerm}`;
+    const cacheKey = generateCacheKey(searchTerm);
     const cached = await AsyncStorage.getItem(cacheKey);
     
     if (cached) {
-      const { url, timestamp } = JSON.parse(cached);
-      const age = Date.now() - timestamp;
-      
-      // Only return cached image if it's less than a week old
-      if (age < CACHE_EXPIRY) {
-        console.log(`Using cached image for ${searchTerm}, age: ${Math.round(age / (1000 * 60 * 60 * 24))} days`);
-        return url;
-      } else {
-        console.log(`Cache expired for ${searchTerm}, fetching new image`);
-      }
+      const { url } = JSON.parse(cached);
+      return url;
     }
     return null;
   } catch (error) {
@@ -55,13 +66,12 @@ const getCachedImage = async (searchTerm) => {
 
 const cacheImage = async (searchTerm, url) => {
   try {
-    const cacheKey = `unsplash_${searchTerm}`;
+    const cacheKey = generateCacheKey(searchTerm);
     const cacheData = {
       url,
       timestamp: Date.now(),
     };
     await AsyncStorage.setItem(cacheKey, JSON.stringify(cacheData));
-    console.log(`Cached new image for ${searchTerm}`);
   } catch (error) {
     console.error('Error caching image:', error);
   }
@@ -86,7 +96,7 @@ const getDefaultImageForHoliday = (holidayId) => {
 
 export const getHolidayImage = async (searchTerm, holidayId) => {
   try {
-    // First check if we have a valid cached image
+    // First check if we have a valid cached image for this week
     const cachedUrl = await getCachedImage(searchTerm);
     if (cachedUrl) {
       return cachedUrl;
@@ -100,7 +110,6 @@ export const getHolidayImage = async (searchTerm, holidayId) => {
     }
 
     if (requestCount >= MAX_REQUESTS_PER_HOUR) {
-      console.log('Rate limit reached, using default image');
       return getDefaultImageForHoliday(holidayId);
     }
 
@@ -129,7 +138,8 @@ export const getHolidayImage = async (searchTerm, holidayId) => {
 };
 
 export const getHeaderImage = async () => {
-  const cacheKey = 'header_image';
+  // Use week-based caching for header image
+  const cacheKey = `header_image_${getCurrentYear()}_${getCurrentWeekNumber()}`;
   const cachedUrl = await AsyncStorage.getItem(cacheKey);
   
   if (cachedUrl) {
@@ -137,7 +147,7 @@ export const getHeaderImage = async () => {
   }
 
   try {
-    // Search for Jewish-themed scroll or parchment images
+    // Fixed list of Jewish-themed queries
     const queries = [
       'torah scroll parchment',
       'jewish manuscript',
@@ -145,11 +155,15 @@ export const getHeaderImage = async () => {
       'ancient jewish text',
       'sefer torah'
     ];
-    const randomQuery = queries[Math.floor(Math.random() * queries.length)];
+    
+    // Use the week number to consistently select the same query each week
+    const weekNumber = getCurrentWeekNumber();
+    const queryIndex = weekNumber % queries.length;
+    const query = queries[queryIndex];
     
     const response = await unsplashApi.get('/photos/random', {
       params: {
-        query: randomQuery,
+        query: query,
         orientation: 'landscape',
         content_filter: 'high'
       }
