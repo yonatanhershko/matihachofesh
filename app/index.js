@@ -9,14 +9,14 @@ import { formatHebrewDate, formatRelativeTime, useHebrewGregorianMonths } from '
 import { getHeaderImage } from './utils/unsplash';
 import { fetchParasha } from './utils/hebcal';
 import { useThemePreference } from './services/userPreferencesService';
-import { createStackNavigator } from '@react-navigation/stack';
-import { NavigationContainer } from '@react-navigation/native';
-import ParashaDetailScreen from './screens/ParashaDetailScreen';
+import { useRouter, usePathname } from 'expo-router';
+import { navigateToRoute } from './utils/navigationUtils';
 
-const Stack = createStackNavigator();
 const fallbackImage = 'https://images.unsplash.com/photo-1584646098378-0874589d76b1?auto=format&fit=crop&w=800';
 
-function HomeScreen({ navigation }) {
+export default function HomeScreen() {
+  const router = useRouter();
+  const pathname = usePathname();
   const [holidays, setHolidays] = useState([]);
   const [headerImage, setHeaderImage] = useState(null);
   const [parasha, setParasha] = useState(null);
@@ -54,11 +54,21 @@ function HomeScreen({ navigation }) {
       // Find the closest holiday
       const closestHoliday = holidays[0]; // The first one is always the closest one
       
-      navigation.navigate('ParashaDetail', {
-        parasha,
-        holiday: closestHoliday,
-        hebrewGregorianMonths,
-        theme
+      // Prepare holiday data for serialization
+      const serializedHoliday = {
+        ...closestHoliday,
+        date: closestHoliday.date ? closestHoliday.date.toISOString() : null
+      };
+      
+      // Navigate to parasha detail screen with params
+      router.push({
+        pathname: 'parasha-detail',
+        params: {
+          parasha: JSON.stringify(parasha),
+          holiday: JSON.stringify(serializedHoliday),
+          hebrewGregorianMonths: JSON.stringify(hebrewGregorianMonths),
+          theme: JSON.stringify(theme)
+        }
       });
     }
   };
@@ -128,9 +138,9 @@ function HomeScreen({ navigation }) {
                 <>
                   <Text style={styles.parashaFullTitle}>פרשת שבוע</Text>
                   <Text style={styles.parashaName}>{parasha.fullTitle}</Text>
-                  <Text style={styles.parashaDetails}>
+                  {/* <Text style={styles.parashaDetails}>
                     {parasha.description || 'טוען...'}
-                  </Text>
+                  </Text> */}
                 </>
               )}
             </View>
@@ -153,7 +163,10 @@ function HomeScreen({ navigation }) {
           <Ionicons name="calendar" size={24} color={theme.navigationIcon} />
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.navButton}>
+        <TouchableOpacity 
+          style={styles.navButton}
+          onPress={() => navigateToRoute(pathname, router, '/')}
+        >
           <Ionicons name="home" size={24} color={theme.navigationIcon} />
         </TouchableOpacity>
       
@@ -166,17 +179,6 @@ function HomeScreen({ navigation }) {
         </TouchableOpacity>
       </View>
     </SafeAreaView>
-  );
-}
-
-export default function App() {
-  return (
-    <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="ParashaDetail" component={ParashaDetailScreen} />
-      </Stack.Navigator>
-    </NavigationContainer>
   );
 }
 
@@ -261,7 +263,7 @@ const styles = StyleSheet.create({
   parashaContainer: {
     width:'100%',
     backgroundColor: 'rgba(255,255,255,0.9)',
-    padding: 20,
+    padding: 2,
   },
   parashaFullTitle: {
     fontSize: 28,
