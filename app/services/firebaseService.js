@@ -30,11 +30,17 @@ export const getDeviceId = async () => {
       await AsyncStorage.setItem(STORAGE_KEYS.DEVICE_ID, deviceId);
     }
     
-    return deviceId;
+    // Sanitize the device ID for Firebase paths
+    // Replace any dots, $, #, [, ] with underscores as they are invalid in Firebase paths
+    const sanitizedDeviceId = deviceId.replace(/[.$#[\]]/g, '_');
+    
+    return sanitizedDeviceId;
   } catch (error) {
     console.error('Error getting device ID:', error);
     // Fallback to a timestamp-based ID if all else fails
-    return `fallback-${Date.now()}`;
+    const fallbackDeviceId = `fallback-${Date.now()}`;
+    const sanitizedFallbackDeviceId = fallbackDeviceId.replace(/[.$#[\]]/g, '_');
+    return sanitizedFallbackDeviceId;
   }
 };
 

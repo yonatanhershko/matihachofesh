@@ -1,0 +1,366 @@
+{
+  "parshot": [
+    {
+      "id": 1,
+      "name": "Bereshit",
+      "hebrewName": "בראשית",
+      "description": ""
+    },
+    {
+      "id": 2,
+      "name": "Noach",
+      "hebrewName": "נח",
+      "description": ""
+    },
+    {
+      "id": 3,
+      "name": "Lech Lecha",
+      "hebrewName": "לך לך",
+      "description": ""
+    },
+    {
+      "id": 4,
+      "name": "Vayera",
+      "hebrewName": "וירא",
+      "description": ""
+    },
+    {
+      "id": 5,
+      "name": "Chayei Sarah",
+      "hebrewName": "חיי שרה",
+      "description": ""
+    },
+    {
+      "id": 6,
+      "name": "Toldot",
+      "hebrewName": "תולדות",
+      "description": ""
+    },
+    {
+      "id": 7,
+      "name": "Vayetzei",
+      "hebrewName": "ויצא",
+      "description": ""
+    },
+    {
+      "id": 8,
+      "name": "Vayishlach",
+      "hebrewName": "וישלח",
+      "description": ""
+    },
+    {
+      "id": 9,
+      "name": "Ki Tisa",
+      "hebrewName": "כי תשא",
+      "description": "מתואר חטא העגל ובקשת משה לראות את כבוד ה'. משה מקבל את הלוחות השניים לאחר שהראשונים נשברו. הפרשה מלמדת על תשובה, סליחה ומחילה, ומדגישה את היחס המיוחד בין ה' לעם ישראל."
+    },
+    {
+      "id": 10,
+      "name": "Vayeshev",
+      "hebrewName": "וישב",
+      "description": "הפרשה מתארת את סיפורו של יוסף, חלומותיו, ומכירתו לעבדות על ידי אחיו. בהמשך מגיע יוסף למצרים, עולה לגדולה בבית פוטיפר, ולבסוף נזרק לכלא בעקבות עלילת אשת פוטיפר."
+    },
+    {
+      "id": 11,
+      "name": "Miketz",
+      "hebrewName": "מקץ",
+      "description": "יוסף פותר את חלומות פרעה ומתמנה למשנה למלך מצרים. בעקבות הרעב, אחיו יורדים למצרים לקנות אוכל. יוסף מזהה אותם ומחליט להעמידם במבחן כדי לבדוק האם השתנו."
+    },
+    {
+      "id": 12,
+      "name": "Vayigash",
+      "hebrewName": "ויגש",
+      "description": "יהודה ניגש אל יוסף ומתחנן על בנימין. יוסף מתוודע לאחיו בסצנה מרגשת. יעקב והמשפחה יורדים למצרים להתאחד עם יוסף ולשרוד את הרעב בחסותו."
+    },
+    {
+      "id": 13,
+      "name": "Vayechi",
+      "hebrewName": "ויחי",
+      "description": "יעקב מברך את בניו ונכדיו לפני מותו, כולל ברכות נבואיות לכל שבט. לאחר מותו, הוא נקבר במערת המכפלה. יוסף מבטיח לאחיו שלא ינקום בהם."
+    },
+    {
+      "id": 14,
+      "name": "Shemot",
+      "hebrewName": "שמות",
+      "description": "תחילת סיפור שעבוד מצרים והולדת משה. לאחר שגדל בארמון פרעה, משה בורח למדין. ה' מתגלה אליו בסנה הבוער ומצווה עליו להוציא את בני ישראל ממצרים."
+    },
+    {
+      "id": 15,
+      "name": "Vaera",
+      "hebrewName": "וארא",
+      "description": "ה' מבטיח למשה כי יגאל את בני ישראל. המכות הראשונות מכות את מצרים: דם, צפרדע, כינים, ערוב, דבר, שחין וברד. פרעה מסרב בכל פעם לשחרר את העם."
+    },
+    {
+      "id": 16,
+      "name": "Bo",
+      "hebrewName": "בא",
+      "description": "שלוש המכות האחרונות פוקדות את מצרים: ארבה, חושך ומכת בכורות. בני ישראל מקבלים את מצוות קרבן פסח, חג המצות ותפילין. פרעה משחרר את העם."
+    },
+    {
+      "id": 17,
+      "name": "Beshalach",
+      "hebrewName": "בשלח",
+      "description": "יציאת מצרים, קריעת ים סוף וטביעת המצרים. בני ישראל אומרים את שירת הים, מקבלים את המן במדבר, ונלחמים בעמלק. משה מתפלל כשידיו מורמות."
+    },
+    {
+      "id": 18,
+      "name": "Yitro",
+      "hebrewName": "יתרו",
+      "description": "יתרו, חותן משה, מצטרף למחנה ישראל ומייעץ למשה להקים מערכת משפט. העם מגיע להר סיני ומקבל את עשרת הדיברות בהתגלות מרשימה."
+    },
+    {
+      "id": 19,
+      "name": "Mishpatim",
+      "hebrewName": "משפטים",
+      "description": "פירוט של חוקים רבים בתחומי העבדות, נזיקין, השאלה, שמירה ועוד. משה עולה להר סיני לארבעים יום וארבעים לילה לקבל את לוחות הברית."
+    },
+    {
+      "id": 20,
+      "name": "Terumah",
+      "hebrewName": "תרומה",
+      "description": "ה' מצווה את בני ישראל לבנות משכן. הפרשה מפרטת את התרומות הנדרשות ואת התוכנית המפורטת לבניית המשכן, הארון, השולחן, המנורה והמזבח."
+    },
+    {
+      "id": 21,
+      "name": "Tetzaveh",
+      "hebrewName": "תצוה",
+      "description": ""
+    },
+    {
+      "id": 22,
+      "name": "Vayakhel",
+      "hebrewName": "ויקהל",
+      "description": ""
+    },
+    {
+      "id": 23,
+      "name": "Pekudei",
+      "hebrewName": "פקודי",
+      "description": ""
+    },
+    {
+      "id": 24,
+      "name": "Vayikra",
+      "hebrewName": "ויקרא",
+      "description": ""
+    },
+    {
+      "id": 25,
+      "name": "Tzav",
+      "hebrewName": "צו",
+      "description": ""
+    },
+    {
+      "id": 26,
+      "name": "Shmini",
+      "hebrewName": "שמיני",
+      "description": ""
+    },
+    {
+      "id": 27,
+      "name": "Tazria",
+      "hebrewName": "תזריע",
+      "description": ""
+    },
+    {
+      "id": 28,
+      "name": "Metzora",
+      "hebrewName": "מצורע",
+      "description": ""
+    },
+    {
+      "id": 29,
+      "name": "Achrei Mot",
+      "hebrewName": "אחרי מות",
+      "description": ""
+    },
+    {
+      "id": 30,
+      "name": "Kedoshim",
+      "hebrewName": "קדושים",
+      "description": ""
+    },
+    {
+      "id": 31,
+      "name": "Emor",
+      "hebrewName": "אמור",
+      "description": ""
+    },
+    {
+      "id": 32,
+      "name": "Behar",
+      "hebrewName": "בהר",
+      "description": ""
+    },
+    {
+      "id": 33,
+      "name": "Bechukotai",
+      "hebrewName": "בחוקותי",
+      "description": ""
+    },
+    {
+      "id": 34,
+      "name": "Bamidbar",
+      "hebrewName": "במדבר",
+      "description": ""
+    },
+    {
+      "id": 35,
+      "name": "Nasso",
+      "hebrewName": "נשא",
+      "description": ""
+    },
+    {
+      "id": 36,
+      "name": "Behaalotcha",
+      "hebrewName": "בהעלותך",
+      "description": ""
+    },
+    {
+      "id": 37,
+      "name": "Shlach",
+      "hebrewName": "שלח",
+      "description": ""
+    },
+    {
+      "id": 38,
+      "name": "Korach",
+      "hebrewName": "קרח",
+      "description": ""
+    },
+    {
+      "id": 39,
+      "name": "Chukat",
+      "hebrewName": "חקת",
+      "description": ""
+    },
+    {
+      "id": 40,
+      "name": "Balak",
+      "hebrewName": "בלק",
+      "description": ""
+    },
+    {
+      "id": 41,
+      "name": "Pinchas",
+      "hebrewName": "פינחס",
+      "description": ""
+    },
+    {
+      "id": 42,
+      "name": "Matot",
+      "hebrewName": "מטות",
+      "description": ""
+    },
+    {
+      "id": 43,
+      "name": "Masei",
+      "hebrewName": "מסעי",
+      "description": ""
+    },
+    {
+      "id": 44,
+      "name": "Devarim",
+      "hebrewName": "דברים",
+      "description": ""
+    },
+    {
+      "id": 45,
+      "name": "Vaetchanan",
+      "hebrewName": "ואתחנן",
+      "description": ""
+    },
+    {
+      "id": 46,
+      "name": "Eikev",
+      "hebrewName": "עקב",
+      "description": ""
+    },
+    {
+      "id": 47,
+      "name": "Reeh",
+      "hebrewName": "ראה",
+      "description": ""
+    },
+    {
+      "id": 48,
+      "name": "Shoftim",
+      "hebrewName": "שופטים",
+      "description": ""
+    },
+    {
+      "id": 49,
+      "name": "Ki Teitzei",
+      "hebrewName": "כי תצא",
+      "description": ""
+    },
+    {
+      "id": 50,
+      "name": "Ki Tavo",
+      "hebrewName": "כי תבוא",
+      "description": ""
+    },
+    {
+      "id": 51,
+      "name": "Nitzavim",
+      "hebrewName": "ניצבים",
+      "description": ""
+    },
+    {
+      "id": 52,
+      "name": "Vayeilech",
+      "hebrewName": "וילך",
+      "description": ""
+    },
+    {
+      "id": 53,
+      "name": "Haazinu",
+      "hebrewName": "האזינו",
+      "description": ""
+    },
+    {
+      "id": 54,
+      "name": "Vezot Habracha",
+      "hebrewName": "וזאת הברכה",
+      "description": ""
+    }
+  ],
+  "combinedParshot": [
+    {
+      "id": "22-23",
+      "names": ["Vayakhel", "Pekudei"],
+      "hebrewNames": ["ויקהל", "פקודי"],
+      "description": ""
+    },
+    {
+      "id": "27-28",
+      "names": ["Tazria", "Metzora"],
+      "hebrewNames": ["תזריע", "מצורע"],
+      "description": ""
+    },
+    {
+      "id": "29-30",
+      "names": ["Achrei Mot", "Kedoshim"],
+      "hebrewNames": ["אחרי מות", "קדושים"],
+      "description": ""
+    },
+    {
+      "id": "32-33",
+      "names": ["Behar", "Bechukotai"],
+      "hebrewNames": ["בהר", "בחוקותי"],
+      "description": ""
+    },
+    {
+      "id": "42-43",
+      "names": ["Matot", "Masei"],
+      "hebrewNames": ["מטות", "מסעי"],
+      "description": ""
+    },
+    {
+      "id": "51-52",
+      "names": ["Nitzavim", "Vayeilech"],
+      "hebrewNames": ["ניצבים", "וילך"],
+      "description": ""
+    }
+  ]
+}

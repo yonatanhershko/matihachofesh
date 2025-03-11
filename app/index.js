@@ -9,10 +9,14 @@ import { formatHebrewDate, formatRelativeTime, useHebrewGregorianMonths } from '
 import { getHeaderImage } from './utils/unsplash';
 import { fetchParasha } from './utils/hebcal';
 import { useThemePreference } from './services/userPreferencesService';
+import { createStackNavigator } from '@react-navigation/stack';
+import { NavigationContainer } from '@react-navigation/native';
+import ParashaDetailScreen from './screens/ParashaDetailScreen';
 
+const Stack = createStackNavigator();
 const fallbackImage = 'https://images.unsplash.com/photo-1584646098378-0874589d76b1?auto=format&fit=crop&w=800';
 
-export default function Home() {
+function HomeScreen({ navigation }) {
   const [holidays, setHolidays] = useState([]);
   const [headerImage, setHeaderImage] = useState(null);
   const [parasha, setParasha] = useState(null);
@@ -42,6 +46,20 @@ export default function Home() {
       setThemePreference(!isDarkMode);
     } catch (error) {
       console.error('Error toggling theme:', error);
+    }
+  };
+
+  const openParashaDetails = () => {
+    if (parasha && holidays.length > 0) {
+      // Find the closest holiday
+      const closestHoliday = holidays[0]; // The first one is always the closest one
+      
+      navigation.navigate('ParashaDetail', {
+        parasha,
+        holiday: closestHoliday,
+        hebrewGregorianMonths,
+        theme
+      });
     }
   };
 
@@ -110,7 +128,7 @@ export default function Home() {
                 <>
                   <Text style={styles.parashaFullTitle}>פרשת שבוע</Text>
                   <Text style={styles.parashaName}>{parasha.fullTitle}</Text>
-                  <Text style={styles.parashaDetails} numberOfLines={1}>
+                  <Text style={styles.parashaDetails}>
                     {parasha.description || 'טוען...'}
                   </Text>
                 </>
@@ -128,7 +146,10 @@ export default function Home() {
       </ScrollView>
 
       <View style={[styles.navigation, { backgroundColor: theme.navigationBackground }]}>
-        <TouchableOpacity style={styles.navButton}>
+        <TouchableOpacity 
+          style={styles.navButton}
+          onPress={openParashaDetails}
+        >
           <Ionicons name="calendar" size={24} color={theme.navigationIcon} />
         </TouchableOpacity>
 
@@ -145,6 +166,17 @@ export default function Home() {
         </TouchableOpacity>
       </View>
     </SafeAreaView>
+  );
+}
+
+export default function App() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="ParashaDetail" component={ParashaDetailScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
@@ -170,7 +202,7 @@ const styles = StyleSheet.create({
     textAlign:'right'
   },
   headerCard: {
-    height: 200,
+    height: 250,
     marginBottom: 20,
     borderRadius: 20,
     overflow: 'hidden',
@@ -227,26 +259,31 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   parashaContainer: {
-width:'100%',
+    width:'100%',
     backgroundColor: 'rgba(255,255,255,0.9)',
+    padding: 20,
   },
   parashaFullTitle: {
     fontSize: 28,
-    fontWeight: 'bold',
-    color: '#000',
-    textAlign: 'right',
-    marginBottom: 8,
+    fontWeight: "bold",
+    textAlign: "center",
+    color: "#000",
+    marginBottom: 5,
   },
   parashaName: {
     fontSize: 22,
-    color: '#333',
-    textAlign: 'right',
-    marginBottom: 12,
+    textAlign: "center",
+    color: "#000",
+    marginBottom: 10,
   },
   parashaDetails: {
     fontSize: 16,
-    color: '#666',
-    textAlign: 'right',
+    textAlign: "right",
+    color: "#333",
     lineHeight: 24,
+    marginTop: 5
+  },
+  holidaysContainer: {
+    marginBottom: 20,
   },
 });

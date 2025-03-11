@@ -1,6 +1,7 @@
 import axios from 'axios';
 import moment from 'moment-timezone';
 import { generateHolidayId } from './utilService';
+import { getParashaForDate } from './parshotUtils';
 
 const hebcalApi = axios.create({
   baseURL: 'https://www.hebcal.com/hebcal',
@@ -118,6 +119,9 @@ export const fetchParasha = async () => {
     // Get the parasha name from Hebcal
     const parashaName = parashaItem.hebrew.replace("פרשת", "").trim();
     const fullTitle = parashaItem.hebrew;
+    
+    // Extract just the parasha name without "Parshat" prefix
+    const englishParashaName = parashaItem.title;
 
     // Now get the text from Sefaria's calendar API
     const calendarResponse = await axios.get(
@@ -132,33 +136,42 @@ export const fetchParasha = async () => {
       )
     );
 
-    if (!parashaEvent) {
-      console.log("No parasha found in Sefaria calendar");
-      return {
-        name: parashaName,
-        fullTitle: fullTitle,
-        date: now.format("YYYY-MM-DD"),
-        description: parashaItem.memo || ""  // Fallback to Hebcal memo
-      };
+    // Get verses from Sefaria if available
+    let verses = "";
+    if (parashaEvent) {
+      // Get the parasha text from Sefaria
+      const parashaRef = parashaEvent.ref;
+      
+      const textResponse = await axios.get(
+        `https://www.sefaria.org/api/texts/${parashaRef}?language=he`
+      );
+
+      // Get first three verses
+      verses = Array.isArray(textResponse.data.he) 
+        ? textResponse.data.he.slice(0, 3).join(" ") 
+        : textResponse.data.he;
     }
 
-    // Get the parasha text from Sefaria
-    const parashaRef = parashaEvent.ref;
-    
-    const textResponse = await axios.get(
-      `https://www.sefaria.org/api/texts/${parashaRef}?language=he`
-    );
-
-    // Get first three verses
-    const verses = Array.isArray(textResponse.data.he) 
-      ? textResponse.data.he.slice(0, 3).join(" ") 
-      : textResponse.data.he;
+    // Try to find the parasha in our local data
+    let parashaDescription = "";
+    try {
+      // Use the English parasha name to find it in our data
+      const localParasha = await getParashaForDate(now);
+      
+      if (localParasha && localParasha.description) {
+        parashaDescription = localParasha.description;
+      }
+    } catch (error) {
+      console.error("Error getting parasha description from local data:", error);
+    }
 
     const result = {
       name: parashaName,
-      fullTitle: fullTitle,  // Using Hebcal's title
+      fullTitle: fullTitle,
+      englishName: englishParashaName,
       date: now.format("YYYY-MM-DD"),
-      description: verses || parashaItem.memo || ""  // Fallback to Hebcal memo if no verses
+      verses: verses || "",
+      description: parashaDescription || parashaItem.memo || ""  // Use our description, fallback to Hebcal memo
     };
 
     return result;
