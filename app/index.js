@@ -3,14 +3,14 @@ import { View, Image, ScrollView, StyleSheet, Text, TouchableOpacity, ImageBackg
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { getHolidays } from './data/holidays';
 import { clearImageCache } from './utils/unsplash';
-import { lightTheme, darkTheme } from './theme';
 import { Ionicons } from '@expo/vector-icons';
 import { formatHebrewDate, formatRelativeTime, useHebrewGregorianMonths } from './utils/hebrewDate';
 import { getHeaderImage } from './utils/unsplash';
 import { fetchParasha } from './utils/hebcal';
-import { useThemePreference } from './services/userPreferencesService';
 import { useRouter, usePathname } from 'expo-router';
 import { navigateToRoute } from './utils/navigationUtils';
+import BottomNavBar from './components/BottomNavBar';
+import { useThemeContext } from './context/ThemeContext';
 
 const fallbackImage = 'https://images.unsplash.com/photo-1584646098378-0874589d76b1?auto=format&fit=crop&w=800';
 
@@ -21,7 +21,7 @@ export default function HomeScreen() {
   const [headerImage, setHeaderImage] = useState(null);
   const [parasha, setParasha] = useState(null);
   const [loading, setLoading] = useState(true);
-  const { isDarkMode, setThemePreference } = useThemePreference();
+  const { theme, isDarkMode } = useThemeContext();
   const { months: hebrewGregorianMonths, loading: monthsLoading } = useHebrewGregorianMonths();
 
   useEffect(() => {
@@ -41,14 +41,6 @@ export default function HomeScreen() {
     loadParasha();
   }, []);
 
-  const toggleTheme = async () => {
-    try {
-      setThemePreference(!isDarkMode);
-    } catch (error) {
-      console.error('Error toggling theme:', error);
-    }
-  };
-
   const openParashaDetails = () => {
     if (parasha && holidays.length > 0) {
       // Find the closest holiday
@@ -60,20 +52,17 @@ export default function HomeScreen() {
         date: closestHoliday.date ? closestHoliday.date.toISOString() : null
       };
       
-      // Navigate to parasha detail screen with params
+      // Navigate to parasha detail screen with params (no need to pass theme now)
       router.push({
         pathname: 'parasha-detail',
         params: {
           parasha: JSON.stringify(parasha),
           holiday: JSON.stringify(serializedHoliday),
-          hebrewGregorianMonths: JSON.stringify(hebrewGregorianMonths),
-          theme: JSON.stringify(theme)
+          hebrewGregorianMonths: JSON.stringify(hebrewGregorianMonths)
         }
       });
     }
   };
-
-  const theme = isDarkMode ? darkTheme : lightTheme;
 
   const loadHolidays = async () => {
     try {
@@ -155,29 +144,9 @@ export default function HomeScreen() {
         </View>
       </ScrollView>
 
-      <View style={[styles.navigation, { backgroundColor: theme.navigationBackground }]}>
-        <TouchableOpacity 
-          style={styles.navButton}
-          onPress={openParashaDetails}
-        >
-          <Ionicons name="calendar" size={24} color={theme.navigationIcon} />
-        </TouchableOpacity>
-
-        <TouchableOpacity 
-          style={styles.navButton}
-          onPress={() => navigateToRoute(pathname, router, '/')}
-        >
-          <Ionicons name="home" size={24} color={theme.navigationIcon} />
-        </TouchableOpacity>
-      
-        <TouchableOpacity style={styles.navButton} onPress={toggleTheme}>
-          <Ionicons 
-            name={isDarkMode ? "sunny" : "moon"} 
-            size={24} 
-            color={theme.navigationIcon} 
-          />
-        </TouchableOpacity>
-      </View>
+      <BottomNavBar 
+        openParashaDetails={openParashaDetails}
+      />
     </SafeAreaView>
   );
 }
