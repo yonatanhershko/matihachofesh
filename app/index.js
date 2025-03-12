@@ -86,7 +86,7 @@ export default function HomeScreen() {
         <View style={styles.textContainer}>
           <Text style={[styles.title, { color: theme.text }]}>{holiday.name}</Text>
           <Text style={[styles.date, { color: theme.secondaryText }]}>
-            {formatHebrewDate(holiday.date, hebrewGregorianMonths)} · {formatRelativeTime(holiday.daysLeft)} ימים שנשארו 
+            {formatHebrewDate(holiday.date, hebrewGregorianMonths)} · {formatRelativeTime(holiday.daysLeft)}
           </Text>
         </View>
         <View style={styles.imageContainer}>

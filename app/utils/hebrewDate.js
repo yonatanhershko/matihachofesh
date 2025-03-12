@@ -80,10 +80,11 @@ export const formatHebrewDate = (date, customMonths = null) => {
 
 export const formatRelativeTime = (daysLeft) => {
   if (daysLeft === 0) {
-    return 'היום!';
+    return 'היום';
   } else if (daysLeft === 1) {
-    return 'מחר!';
+    return 'מחר';
   } else {
-    return `עוד ${daysLeft} ימים`;
+    // Change order for proper RTL display in context
+    return `${daysLeft} ימים שנשארו`;
   }
 };

@@ -46,20 +46,21 @@ export default function ParashaDetailScreen() {
   const HolidayCard = ({ holiday }) => (
     <View style={[styles.card, { backgroundColor: theme.card }]}>
       <View style={styles.cardContent}>
-        <View style={styles.textContainer}>
-          <Text style={[styles.title, { color: theme.text }]}>{holiday.name}</Text>
-          <Text style={[styles.date, { color: theme.secondaryText }]}>
-            {holiday.date ? safeFormatHebrewDate(holiday.date, hebrewGregorianMonths) : 'תאריך לא זמין'} 
-            {holiday.daysLeft !== undefined ? ` · ${formatRelativeTime(holiday.daysLeft)} ימים שנשארו` : ''}
-          </Text>
-        </View>
-        <View style={styles.imageContainer}>
+      <View style={styles.imageContainer}>
           <Image
             source={{ uri: holiday.imageUrl || fallbackImage }}
             style={styles.image}
             resizeMode="cover"
           />
         </View>
+        <View style={styles.textContainer}>
+          <Text style={[styles.title, { color: theme.text }]}>{holiday.name}</Text>
+          <Text style={[styles.date, { color: theme.secondaryText }]}>
+            {holiday.date ? safeFormatHebrewDate(holiday.date, 'D MMMM YYYY') : 'תאריך לא זמין'} 
+            {holiday.daysLeft !== undefined ? ` · ${formatRelativeTime(holiday.daysLeft)}` : ''}
+          </Text>
+        </View>
+      
       </View>
     </View>
   );
@@ -80,16 +81,7 @@ export default function ParashaDetailScreen() {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Back Button */}
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => router.back()}
-        >
-          <Ionicons name="arrow-back" size={24} color={theme.text} />
-          <Text style={[styles.backText, { color: theme.text }]}>Back</Text>
-        </TouchableOpacity>
-
-
+       
   {/* Parasha Detail Content */}
   <View style={styles.parashaDetailContainer}>
           <Text style={[styles.parashaTitle, { color: theme.text }]}>{parasha.fullTitle}</Text>
@@ -100,38 +92,10 @@ export default function ParashaDetailScreen() {
           {/* Add more parasha details as needed */}
         </View>
 
-        {/* Parasha Title */}
-        <Text style={[styles.title, { color: theme.headerText }]}>
-          {parasha.title}
-        </Text>
-
-
-
         {/* Holiday Card */}
         <View style={styles.holidayContainer}>
           <Text style={[styles.sectionTitle, { color: theme.text }]}>החופש הקרוב</Text>
-          <View style={[styles.card, { backgroundColor: theme.card }]}>
-            <View style={styles.cardContent}>
-              <View style={styles.textContainer}>
-                <Text style={[styles.holidayTitle, { color: theme.text }]}>{holiday.name || holiday.title}</Text>
-                <Text style={[styles.holidayDate, { color: theme.secondaryText }]}>
-                  {holiday.date ? safeFormatHebrewDate(holiday.date, 'D MMMM YYYY') : 'תאריך לא זמין'}
-                </Text>
-                <Text style={[styles.daysLeftText, { color: theme.secondaryText }]}>
-                  {formatRelativeTime(
-                    typeof holiday.date === 'string' ? moment(holiday.date) : holiday.date
-                  )}
-                </Text>
-              </View>
-              <View style={styles.imageContainer}>
-                <Image
-                  source={{ uri: holiday.imageUrl || fallbackImage }}
-                  style={styles.image}
-                  resizeMode="cover"
-                />
-              </View>
-            </View>
-          </View>
+          <HolidayCard holiday={holiday} />
         </View>
       </ScrollView>
 
@@ -152,20 +116,16 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
   },
-  backButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  backText: {
-    marginLeft: 8,
-    fontSize: 16,
-  },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 'bold',
     marginBottom: 8,
-    textAlign: 'right',
+    textAlign: 'center',
+  },
+  date: {
+    fontSize:16,
+    textAlign: 'center',
+    width: '100%',
   },
   holidayContainer: {
     marginBottom: 24,
@@ -174,64 +134,42 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 12,
-    textAlign: 'right',
+    textAlign: 'center',
   },
   card: {
-    borderRadius: 12,
     marginBottom: 16,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
   },
   parashaDetailContainer: {
-    marginBottom: 24,
+    marginVertical: 24,
   },
   parashaTitle: {
-    fontSize: 24,
+    fontSize: 32,
     fontWeight: 'bold',
     marginBottom: 8,
-    textAlign: 'right',
+    textAlign: 'center',
   },
   parashaDescription: {
-    fontSize: 16,
+    fontSize: 18,
     lineHeight: 24,
     textAlign: 'right',
   },
-  holidayContainer: {
-    marginBottom: 24,
-  },
   cardContent: {
-    flexDirection: 'row',
+    width:'100%',
+    flexDirection: 'column',
     padding: 16,
+    gap:10,
   },
   textContainer: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'flex-end',
-  },
-  holidayTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 4,
-    textAlign: 'right',
-  },
-  holidayDate: {
-    fontSize: 14,
-    textAlign: 'right',
-    marginBottom: 4,
-  },
-  daysLeftText: {
-    fontSize: 14,
-    textAlign: 'right',
+    alignItems: 'center',
   },
   imageContainer: {
-    width: 80,
-    height: 80,
+    alignSelf:'center',
+    width: 180,
+    height: 180,
     borderRadius: 8,
     overflow: 'hidden',
-    marginRight: 16,
   },
   image: {
     width: '100%',
