@@ -11,6 +11,7 @@ import { useRouter, usePathname } from 'expo-router';
 import { navigateToRoute } from './utils/navigationUtils';
 import BottomNavBar from './components/BottomNavBar';
 import { useThemeContext } from './context/ThemeContext';
+import { HomeScreenSkeleton } from './components/Skeletons';
 
 const fallbackImage = 'https://images.unsplash.com/photo-1584646098378-0874589d76b1?auto=format&fit=crop&w=800';
 
@@ -103,14 +104,14 @@ export default function HomeScreen() {
   if (loading || monthsLoading) {
     return (
       <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
-        <Text style={{ color: theme.text }}>Loading...</Text>
+        <HomeScreenSkeleton />
       </SafeAreaView>
     );
   }
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView  style={styles.content} showsVerticalScrollIndicator={false} nestedScrollEnabled={true}>
        
       <View style={styles.header}>
         <Text style={[styles.headerTitle, { color: theme.headerText }]}>מתי החופש</Text>
@@ -127,9 +128,6 @@ export default function HomeScreen() {
                 <>
                   <Text style={styles.parashaFullTitle}>פרשת שבוע</Text>
                   <Text style={styles.parashaName}>{parasha.fullTitle}</Text>
-                  {/* <Text style={styles.parashaDetails}>
-                    {parasha.description || 'טוען...'}
-                  </Text> */}
                 </>
               )}
             </View>
@@ -159,6 +157,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     paddingHorizontal: 20,  
+    marginBottom: 40,
   },
   header: {
     flexDirection: 'row',

@@ -8,6 +8,7 @@ import { navigateToRoute } from './utils/navigationUtils';
 import moment from 'moment-timezone';
 import BottomNavBar from './components/BottomNavBar';
 import { useThemeContext } from './context/ThemeContext';
+import { ParashaDetailScreenSkeleton } from './components/Skeletons';
 
 const fallbackImage = 'https://images.unsplash.com/photo-1584646098378-0874589d76b1?auto=format&fit=crop&w=800';
 
@@ -68,7 +69,7 @@ export default function ParashaDetailScreen() {
   if (!parasha || !holiday) {
     return (
       <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
-        <Text style={{ color: theme.text }}>Loading...</Text>
+        <ParashaDetailScreenSkeleton />
       </SafeAreaView>
     );
   }

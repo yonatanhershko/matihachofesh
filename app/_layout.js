@@ -1,11 +1,10 @@
 import React, { useEffect } from 'react';
 import { Slot } from 'expo-router';
 import { View, ActivityIndicator } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import Toast, { ToastProvider } from 'react-native-toast-notifications';
-import { app } from './utils/firebaseConfig';
 import { initializeFirebaseMonths } from './utils/hebrewDate';
 import { ThemeProvider, useThemeContext } from './context/ThemeContext';
+import { HomeScreenSkeleton } from './components/Skeletons';
 
 function MainApp() {
   const { loading, theme } = useThemeContext();
@@ -13,7 +12,7 @@ function MainApp() {
   if (loading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#f5f5f5' }}>
-        <ActivityIndicator size="large" color="#0000ff" />
+        <HomeScreenSkeleton />
       </View>
     );
   }

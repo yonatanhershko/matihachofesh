@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useColorScheme } from 'react-native';
 import { saveUserThemePreference, getUserThemePreference } from '../services/firebaseService';
 import { STORAGE_KEYS } from '../utils/constants';
-import { lightTheme, darkTheme } from '../theme';
+import { lightTheme, darkTheme } from '../style/theme';
 
 // Create a context for the theme
 const ThemeContext = createContext();
