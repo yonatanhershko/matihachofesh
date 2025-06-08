@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, Image, ScrollView, StyleSheet, Text, TouchableOpacity, ImageBackground } from 'react-native';
+import { View, Image, ScrollView, StyleSheet, Text, ImageBackground , Pressable} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { getHolidays } from './data/holidays';
 import { clearImageCache } from './utils/unsplash';
-import { Ionicons } from '@expo/vector-icons';
 import { formatHebrewDate, formatRelativeTime, useHebrewGregorianMonths } from './utils/hebrewDate';
 import { getHeaderImage } from './utils/unsplash';
 import { fetchParasha } from './utils/hebcal';
@@ -117,7 +116,7 @@ export default function HomeScreen() {
         <Text style={[styles.headerTitle, { color: theme.headerText }]}>מתי החופש</Text>
       </View>
         {/* Header Card */}
-        <View style={styles.headerCard}>
+        <Pressable style={styles.headerCard} onPress={openParashaDetails}>
           <ImageBackground
             source={{ uri: headerImage }}
             style={styles.headerBackground}
@@ -132,7 +131,7 @@ export default function HomeScreen() {
               )}
             </View>
           </ImageBackground>
-        </View>
+        </Pressable >
 
         {/* Holiday Cards */}
         <View style={styles.holidaysContainer}>
